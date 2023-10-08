@@ -1,58 +1,23 @@
-import httpx
-import json
+from scripts import get_data_from_api, count_block_duration, split_dialogue, dialogues_to_webvtt
+import datetime
 
-API_KEY = "7e4eb134c8b3a36fa4e52de23f5f1c33"
-SYMBOL = "AAPL"
-YEAR = "2023"
-QUARTER = "3"
+def make_subtitles(wpm: int, max_length: int) -> str:
+    data = get_data_from_api()
+    blocks = split_dialogue(data[0]["content"], max_length)
+    current_time = datetime.datetime.strptime(data[0]["date"], "%Y-%m-%d %H:%M:%S")
+    timings = []
+    for block in blocks:
+        duration = count_block_duration(wpm=wpm, text=block)
+        start_time = current_time
+        end_time = start_time + datetime.timedelta(seconds=duration)
+        timings.append((start_time.strftime("%H:%M:%S"), end_time.strftime("%H:%M:%S")))
+        current_time = end_time
 
-URL = f"https://financialmodelingprep.com/api/v3/earning_call_transcript/{SYMBOL}?year={YEAR}&quarter={3}&apikey={API_KEY}"
+    return dialogues_to_webvtt(dialogues=blocks, timings=timings)
 
-
-# get data from api and save it as json
-def get_data_from_api():
-    with httpx.Client() as client:
-        response = client.get(url=URL)
-
-    with open("data.json", "w") as file:
-        data = response.json()
-        json.dump(data, file)
-
-    return response.json()
-
-
-# count text duration by word per second
-def count_block_duration(wps: int, text: str) -> float:
-    splited_text = text.split()
-    duration = len(splited_text) / wps
-
-    return duration
-
-
-# divide text on blocks by symbols count
-def split_dialogue(dialogue: str, max_length: int) -> list[str]:
-    block = ""
-    blocks = []
-    for char in dialogue:
-        block += char
-        if len(block) >= max_length and char == ".":
-            blocks.append(block)
-            block = ""
-    if block:
-        blocks.append(block)
-
-    return blocks
-
-
-def dialogues_to_webvtt(dialogues, timings):
-    webvtt_content = "WEBVTT\n\n"
-
-    for i, (start_time, end_time) in enumerate(timings):
-        dialogue_text = dialogues[i]
-        webvtt_content += f"{start_time} --> {end_time}\n{dialogue_text}\n\n"
-
-    return webvtt_content
 
 if __name__ == '__main__':
-    pass
+    subtitles = make_subtitles(wpm=10, max_length=800)
+    with open("subtitles.vtt", "w") as file:
+        file.write(subtitles)
 
