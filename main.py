@@ -17,7 +17,7 @@ def make_subtitles(wpm: int, max_length: int) -> str:
 
 
 if __name__ == '__main__':
-    subtitles = make_subtitles(wpm=10, max_length=800)
+    subtitles = make_subtitles(wpm=60, max_length=800)
     with open("subtitles.vtt", "w") as file:
         file.write(subtitles)
 
