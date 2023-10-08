@@ -4,17 +4,29 @@ The script getting information from FMP call transcripts and transform it to sub
 
 ## How to use
 
-1. Rename the .env.sample to .env and write here your data:
+1. Clone the repository:
+   ```git clone https://github.com/mblazhko/transcripting-dialogue.git```
+2. Navigate to the project directory:
+   ```cd transcriprion```
+3. Create a virtual environment:
+   ```python -m venv env```
+
+4. Activate the virtual environment:
+   - For Windows:
+   ``` .\env\Scripts\activate```
+   - For macOS and Linux:
+   ```source env/bin/activate```
+5. ```pip install -r requirements.txt```
+
+6. Rename the .env.sample to .env and write here your data:
     
     - API_KEY=API_KEY
-    - SYMBOL=SYMBOL
-    - YEAR=YEAR
-    - QUARTER=QUARTER
 
-2. Run script
+7. Run script:
 
-    ```python main.py```
+   -  ```python main.py```
+   - Enter information what script wants
 
-3. After you will find ready to use subtitles.vtt file in root directory.
+8. After you will find ready to use subtitles.vtt file in root directory.
 
     
