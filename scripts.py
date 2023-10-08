@@ -1,10 +1,14 @@
 import httpx
 import json
+import os
+from dotenv import load_dotenv
 
-API_KEY = "7e4eb134c8b3a36fa4e52de23f5f1c33"
-SYMBOL = "AAPL"
-YEAR = "2023"
-QUARTER = "3"
+load_dotenv()
+
+API_KEY = os.getenv('API_KEY')
+SYMBOL = os.getenv('SYMBOL')
+YEAR = os.getenv('YEAR')
+QUARTER = os.getenv('QUARTER')
 
 URL = f"https://financialmodelingprep.com/api/v3/earning_call_transcript/{SYMBOL}?year={YEAR}&quarter={3}&apikey={API_KEY}"
 
@@ -24,7 +28,7 @@ def get_data_from_api() -> dict:
 # count text duration by word per second
 def count_block_duration(wpm: int, text: str) -> float:
     words = len(text.split())
-    duration = words / wpm
+    duration = (words / wpm) * 60
 
     return duration
 
