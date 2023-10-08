@@ -8,15 +8,15 @@ load_dotenv()
 
 # get data from api and save it as json
 def get_data_from_api(
-        symbol: str = input("Enter symbol of the data you want to have: "),
-        year: int = input("Enter the year of the data you want to have: "),
-        quarter: int = input(
-            "Enter the quarter of the data you want to have: ")
+    symbol: str = input("Enter symbol of the data you want to have: "),
+    year: int = input("Enter the year of the data you want to have: "),
+    quarter: int = input("Enter the quarter of the data you want to have: "),
 ) -> dict:
-    api_key = os.getenv('API_KEY')
-    url = ("https://financialmodelingprep.com/api/v3/earning_call_transcript/"
-           f"{symbol}?year={year}&quarter={quarter}&apikey={api_key}"
-           )
+    api_key = os.getenv("API_KEY")
+    url = (
+        "https://financialmodelingprep.com/api/v3/earning_call_transcript/"
+        f"{symbol}?year={year}&quarter={quarter}&apikey={api_key}"
+    )
     try:
         with httpx.Client() as client:
             response = client.get(url=url)
@@ -29,16 +29,17 @@ def get_data_from_api(
     with open("data.json", "w") as file:
         data = response.json()
         if not data:
-            print("\nThere is no data on your request. Try another request."
-                  "\nExit..."
-                  )
+            print(
+                "\nThere is no data on your request. Try another request."
+                "\nExit..."
+            )
             exit()
         json.dump(data, file)
 
     return response.json()
 
 
-# count text duration by word per second
+# count text duration by word per minute
 def count_block_duration(wpm: int, text: str) -> float:
     words = len(text.split())
     duration = (words / wpm) * 60
@@ -48,7 +49,7 @@ def count_block_duration(wpm: int, text: str) -> float:
 
 # get speaker name from text block
 def extract_speaker_name(dialogue) -> str | None:
-    lines = dialogue.split('\n')
+    lines = dialogue.split("\n")
     speaker_name = None
 
     for line in lines:
@@ -93,8 +94,11 @@ def dialogues_to_webvtt(dialogues, timings) -> str:
 
     for i, (start_time, end_time) in enumerate(timings):
         dialogue_text = dialogues[i]
-        webvtt_content += f"{i + 1}\n{start_time} --> {end_time}\n{dialogue_text}\n\n"
+        webvtt_content += (
+            f"{i + 1}\n{start_time} --> {end_time}\n{dialogue_text}\n\n"
+        )
 
     print(
-        "\nThe subtitle file has been successfully created and saved to root")
+        "\nThe subtitle file has been successfully created and saved to root"
+    )
     return webvtt_content
