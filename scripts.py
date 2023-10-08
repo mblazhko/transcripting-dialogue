@@ -5,21 +5,34 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-API_KEY = os.getenv('API_KEY')
-SYMBOL = os.getenv('SYMBOL')
-YEAR = os.getenv('YEAR')
-QUARTER = os.getenv('QUARTER')
-
-URL = f"https://financialmodelingprep.com/api/v3/earning_call_transcript/{SYMBOL}?year={YEAR}&quarter={3}&apikey={API_KEY}"
-
 
 # get data from api and save it as json
-def get_data_from_api() -> dict:
-    with httpx.Client() as client:
-        response = client.get(url=URL)
+def get_data_from_api(
+        symbol: str = input("Enter symbol of the data you want to have: "),
+        year: int = input("Enter the year of the data you want to have: "),
+        quarter: int = input(
+            "Enter the quarter of the data you want to have: ")
+) -> dict:
+    api_key = os.getenv('API_KEY')
+    url = ("https://financialmodelingprep.com/api/v3/earning_call_transcript/"
+           f"{symbol}?year={year}&quarter={quarter}&apikey={api_key}"
+           )
+    try:
+        with httpx.Client() as client:
+            response = client.get(url=url)
+        response.raise_for_status()
+    except httpx.HTTPError as e:
+        print(f"HTTPError: {e}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
     with open("data.json", "w") as file:
         data = response.json()
+        if not data:
+            print("\nThere is no data on your request. Try another request."
+                  "\nExit..."
+                  )
+            exit()
         json.dump(data, file)
 
     return response.json()
@@ -64,7 +77,6 @@ def split_block(block: str, max_length: int) -> list[str]:
     return blocks
 
 
-
 # divide text on blocks by symbols count
 def split_dialogue(dialogue: str, max_length: int) -> list[str]:
     splitted_dialogue = dialogue.split("\n")
@@ -81,6 +93,8 @@ def dialogues_to_webvtt(dialogues, timings) -> str:
 
     for i, (start_time, end_time) in enumerate(timings):
         dialogue_text = dialogues[i]
-        webvtt_content += f"{i+1}\n{start_time} --> {end_time}\n{dialogue_text}\n\n"
+        webvtt_content += f"{i + 1}\n{start_time} --> {end_time}\n{dialogue_text}\n\n"
 
+    print(
+        "\nThe subtitle file has been successfully created and saved to root")
     return webvtt_content
