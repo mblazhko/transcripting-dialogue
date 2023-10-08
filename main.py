@@ -44,6 +44,15 @@ def split_dialogue(dialogue: str, max_length: int) -> list[str]:
     return blocks
 
 
+def dialogues_to_webvtt(dialogues, timings):
+    webvtt_content = "WEBVTT\n\n"
+
+    for i, (start_time, end_time) in enumerate(timings):
+        dialogue_text = dialogues[i]
+        webvtt_content += f"{start_time} --> {end_time}\n{dialogue_text}\n\n"
+
+    return webvtt_content
+
 if __name__ == '__main__':
     pass
 
